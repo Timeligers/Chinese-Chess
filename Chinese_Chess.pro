@@ -27,11 +27,13 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
     board.cpp \
-    stone.cpp
+    stone.cpp \
+    first.cpp
 
 HEADERS += \
     board.h \
-    stone.h
+    stone.h \
+    first.h
 
 FORMS += \
         widget.ui

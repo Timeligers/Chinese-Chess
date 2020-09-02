@@ -34,8 +34,11 @@ public:
     QPoint center(int id);
 
 signals:
+    void mySignal();
 
 public slots:
+    void new_game();
+    void BacktoMain();
 };
 
 #endif // BOARD_H

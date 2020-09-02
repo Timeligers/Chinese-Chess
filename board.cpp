@@ -1,14 +1,19 @@
 #include "board.h"
 #include <QPainter>
+#include <QPushButton>
+#include <QMessageBox>
 
 board::board(QWidget *parent) : QWidget(parent)
 {
-    srand();
-    for(int i=0;i<32;i++)
-    {
-        _s[i].init(i,c[i]);
-    }
-    _selectid=-1;
+    new_game();
+    QPushButton *Newgame= new QPushButton("开始新一局",this);
+    Newgame->move(600,400);
+    connect(Newgame,SIGNAL(clicked()),this,SLOT(new_game()));
+
+    QPushButton *Back = new QPushButton("返回",this);
+    Back->move(600,500);
+    connect(Back,SIGNAL(clicked()),this,SLOT(BacktoMain()));
+
 }
 
 void board::paintEvent(QPaintEvent *)
@@ -285,4 +290,41 @@ int board::getstoneatLine(int row_f, int col_f, int row_d, int col_d)
     }
     qDebug()<<ret;
     return ret;
+}
+
+void board::new_game()
+{
+    srand();
+    for(int i=0;i<32;i++)
+    {
+        _s[i].init(i,c[i]);
+        _s[i]._dead=false;
+        _s[i]._turnup=false;
+    }
+    _selectid=-1;
+    update();
+    return;
+}
+
+void board::BacktoMain()
+{
+    QMessageBox msg;
+    msg.setInformativeText("是否存档");
+    msg.setStandardButtons(QMessageBox::Save|QMessageBox::Discard|QMessageBox::Cancel);
+    msg.button(QMessageBox::Save)->setText("是");
+    msg.button(QMessageBox::Discard)->setText("否");
+    msg.button(QMessageBox::Cancel)->setText("取消");
+    msg.setDefaultButton(QMessageBox::Save);
+    int ret=msg.exec();
+    switch (ret)
+    {
+        case QMessageBox::Save:
+            break;
+        case QMessageBox::Discard:
+            new_game();
+            break;
+        case QMessageBox::Cancel:
+            return;
+    }
+    emit mySignal();
 }
