@@ -1,44 +1,63 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include <QWidget>
-#include <QPainter>
+#include <QMainWindow>
+#include "stone.h"
+#include "step.h"
+#include <QVector>
 #include <QtGlobal>
 #include <QTime>
+#include <QFrame>
 #include <QMouseEvent>
-#include "stone.h"
 
-class board : public QWidget
+class board : public QFrame
 {
     Q_OBJECT
-public:
-    explicit board(QWidget *parent = nullptr);
 
-    stone _s[32];//棋子
-    int _r;//半径。
-    int D=0;//死亡计数器。
-    int _selectid;//选中的棋子ID。
-    int c[32];//随机化数组安排棋子位置。
-    bool _redstep;//红黑子轮流走棋
-    bool start=false;
+public:
+    board(QWidget *parent = 0);
+    ~board();
+
+    stone _s[32];
+    int c[32];
+    int _r=20;//棋子半径
+    int _selectid;
+    int D;
+    bool _redstep;
+    bool _redfirst;
+    bool start;
+
+    QVector<step*> steps;
+
+    void new_game();
+    void srand();
 
     void paintEvent(QPaintEvent *);
-    void drawstone(QPainter &painter,int id);
-    void mouseReleaseEvent(QMouseEvent*);//选取棋子信号
-    bool getRowcol(QPoint pt,int &row,int &col);//判断是否点到棋子以及得到棋子行列号
-    bool CanWin(int a,int b);
-    bool canmove(int id,int row,int col);
-    void srand();//随机化
-    int getstoneatLine(int row_f,int col_f,int row_d,int col_d);
-    QPoint center(int row,int col);
+    void drawPlate(QPainter &painter);
+    void drawPlace(QPainter &painter);
+    void drawStone(QPainter &painter);
+    void drawStone(QPainter &painter,int id);
     QPoint center(int id);
+    QPoint center(int row,int col);
 
-signals:
-    void mySignal();
+    void mouseReleaseEvent(QMouseEvent * Event);
+    void click(QPoint pt);
+    virtual void click(int id, int row, int col);
+    int getStoneId(int row, int col);
+    bool getClickRowCol(QPoint pt, int &row, int &col);
 
-public slots:
-    void new_game();
-    void BacktoMain();
+    bool canmove(int id,int row,int col);
+    bool canmove(int i, int killid, int row, int col);
+    bool canwin(int a,int b);
+    int getstoneatLine(int row_f, int col_f, int row_d, int col_d);
+    void moveStone(int moveid, int killid);
+    void moveStone(int id, int row, int col);
+    void killStone(int id);
+    void reliveStone(int id);
+
+    void savestep(int moveid, int rowto,int colto, QVector<step *> &steps);
+    void savestep(int moveid, int killid, QVector<step *> &steps);
+
 };
 
 #endif // BOARD_H

@@ -1,26 +1,27 @@
 #ifndef STONE_H
 #define STONE_H
 
-#include <QWidget>
-#include <QString>
-#include <QDebug>
+#include<QRect>
+#include<QPainter>
 
-class stone : public QWidget
+class stone
 {
-    Q_OBJECT
 public:
-    explicit stone(QWidget *parent = nullptr);
+    stone();
+    ~stone();
 
-    enum Type{jiang,shuai,shi,xiang,ma,che,pao,bing,zu};
+    enum TYPE{jiang,shuai,shi,xiang,che,ma,pao,zu,bing};
+
+    void init(int id);
+
     int _row;
     int _col;
     int _id;
-    int _deadnum;//死亡顺序。
-    bool _dead;//是否死亡。
+    int _deadnum=-1;
+    bool _dead;
     bool _red;
-    bool _turnup=false;
-    Type _type;
-
+    bool _turnup;
+    TYPE _type;
 
     QString getText()
     {
@@ -36,12 +37,10 @@ public:
             else
             {return "士";}
         case xiang:
-            if(_red){
-                return "相";
-            }
-            else {
-                return "象";
-            }
+            if(_red)
+            {return "相";}
+            else
+            {return "象";}
         case ma:
             return "马";
         case che:
@@ -53,31 +52,27 @@ public:
         case zu:
             return "卒";
         }
-      return "错误";
+        return "错误";
     }
-
 
     void init(int id,int m)
-    { Type pos[32]={stone::jiang,stone::shuai,
-                    stone::shi,stone::shi,stone::shi,stone::shi,
-                    stone::xiang,stone::xiang,stone::xiang,stone::xiang,
-                    stone::che,stone::che,stone::che,stone::che,
-                    stone::ma,stone::ma,stone::ma,stone::ma,
-                    stone::pao,stone::pao,stone::pao,stone::pao,
-                    stone::zu,stone::bing,stone::zu,stone::bing,
-                    stone::zu,stone::bing,stone::zu,stone::bing,
-                    stone::zu,stone::bing};
-        _row=m/8;
-        _col=m%8;
-        _type=pos[id];
-        _red=id%2;
-        _id=id;
-        _dead=false;
+    {
+        TYPE pos[32]={stone::jiang,stone::shuai,
+                            stone::shi,stone::shi,stone::shi,stone::shi,
+                            stone::xiang,stone::xiang,stone::xiang,stone::xiang,
+                            stone::che,stone::che,stone::che,stone::che,
+                            stone::ma,stone::ma,stone::ma,stone::ma,
+                            stone::pao,stone::pao,stone::pao,stone::pao,
+                            stone::zu,stone::bing,stone::zu,stone::bing,
+                            stone::zu,stone::bing,stone::zu,stone::bing,
+                            stone::zu,stone::bing};
+                _row=m/8;
+                _col=m%8;
+                _type=pos[id];
+                _red=id%2;
+                _id=id;
+                _dead=false;
     }
 
-signals:
-
-public slots:
 };
-
 #endif // STONE_H
