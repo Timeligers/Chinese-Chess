@@ -23,6 +23,8 @@ public:
     int getmaxscore(int level,int curminscore);
     int score();
 
+    void back();
+
     int level;
 
 

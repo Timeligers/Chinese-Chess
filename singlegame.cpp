@@ -1,4 +1,5 @@
 #include "singlegame.h"
+#include <QMessageBox>
 
 singlegame::singlegame(QWidget *parent) :board (parent)
 {
@@ -7,15 +8,17 @@ singlegame::singlegame(QWidget *parent) :board (parent)
 
 void singlegame::click(int id,int row,int col)
 {
-    if(start==false)//判定先手。
+    if(start==false)
     {
-        _redstep=_s[id]._red;
         _redfirst=_s[id]._red;
+        _redstep=_s[id]._red;
         start=true;
     }
     if(_redfirst==_redstep)
     {
         board::click(id,row,col);
+        if(start==false)
+            return;
         if(_redfirst!=_redstep)
         {
              QTimer::singleShot(100,this,SLOT(computerMove()));
@@ -27,17 +30,29 @@ void singlegame::computerMove()
     step* step = getBestMove();
     if(step==nullptr)
     {
-        new_game();
-        return;
+        if(_redfirst)
+        {
+            QMessageBox::information(NULL,"游戏结束","红方胜利");
+            new_game();
+            return;
+        }
+        else
+        {
+            QMessageBox::information(NULL,"游戏结束","黑方胜利");
+            new_game();
+            return;
+        }
     }
     if(step->_killid!=-1)
     {
+        savestep(step->_moveid,step->_killid,steps);
         moveStone(step->_moveid, step->_killid);
         _s[step->_killid]._dead=true;
         D++;
     }
     else
     {
+        savestep(step->_moveid,step->_rowTo,step->_colTo,steps);
         moveStone(step->_moveid,step->_rowTo,step->_colTo);
         if(step->_colTo==step->_colFrom&&step->_rowTo==step->_rowFrom)
         {
@@ -51,14 +66,13 @@ void singlegame::computerMove()
 step* singlegame::getBestMove()
 {
     step* ret = NULL;
-    QVector<step*> steps;
-    getAllpossiblemoveMain(steps);
+    QVector<step*> STEPS;
+    getAllpossiblemoveMain(STEPS);
     int maxInAllMinScore = -300000;
-    //qDebug()<<steps.count();
-    while(steps.count())
+    while(STEPS.count())
     {
-        step* step = steps.last();
-        steps.removeLast();
+        step* step = STEPS.last();
+        STEPS.removeLast();
         fakemove(step);
         int minScore;
         if(_redfirst)
@@ -113,13 +127,13 @@ int singlegame::getminscore(int Level, int curMin)
     if(Level == 0)
         return score();
 
-    QVector<step*> steps;
-    getAllpossiblemove(_redfirst,steps);
+    QVector<step*> STEPS;
+    getAllpossiblemove(_redfirst,STEPS);
     int minInAllMaxScore = 300000;
-    while(steps.count())
+    while(STEPS.count())
     {
-        step* Step = steps.last();
-        steps.removeLast();
+        step* Step = STEPS.last();
+        STEPS.removeLast();
         fakemove(Step);
         int maxScore ;
         if(_redfirst)
@@ -135,10 +149,10 @@ int singlegame::getminscore(int Level, int curMin)
 
         if(maxScore <= curMin)
         {
-            while(steps.count())
+            while(STEPS.count())
             {
-                step* step = steps.last();
-                steps.removeLast();
+                step* step = STEPS.last();
+                STEPS.removeLast();
                 delete step;
             }
             return maxScore;
@@ -158,13 +172,13 @@ int singlegame::getmaxscore(int Level, int curMax)
     if(Level == 0)
         return score();
 
-    QVector<step*> steps;
-    getAllpossiblemove(!_redfirst,steps);
+    QVector<step*> STEPS;
+    getAllpossiblemove(!_redfirst,STEPS);
     int maxInAllMinScore = -300000;
 
-    while(steps.count())
+    while(STEPS.count())
     {
-        step* Step = steps.last();
+        step* Step = STEPS.last();
         steps.removeLast();
 
         fakemove(Step);
@@ -182,10 +196,10 @@ int singlegame::getmaxscore(int Level, int curMax)
 
         if(minScore >= curMax)
         {
-            while(steps.count())
+            while(STEPS.count())
             {
-                step* step = steps.last();
-                steps.removeLast();
+                step* step = STEPS.last();
+                STEPS.removeLast();
                 delete step;
             }
             return minScore;
@@ -275,5 +289,33 @@ void singlegame::getAllpossiblemove(bool redfirst,QVector<step *> &steps)
             savestep(c,_s[c]._row,_s[c]._col,steps);
             break;
         }
+    }
+}
+
+void singlegame::back()
+{
+    if(_redstep==_redfirst)
+    {
+        step* Step1=steps.last();
+        steps.removeLast();
+        step* Step2=steps.last();
+        steps.removeLast();
+
+        if(Step2->_colTo==Step2->_colFrom&&Step2->_rowTo==Step2->_rowFrom)
+        {
+            QMessageBox::information(nullptr,"悔棋","己方翻棋无法悔棋");
+            delete Step1;
+            delete Step2;
+            return;
+        }
+        if(Step1->_colTo==Step1->_colFrom&&Step1->_rowTo==Step1->_rowFrom)
+        {
+            QMessageBox::information(nullptr,"悔棋","电脑翻棋无法悔棋");
+            delete Step1;
+            delete Step2;
+            return;
+        }
+        backone(Step1);
+        backone(Step2);
     }
 }

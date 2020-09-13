@@ -30,16 +30,18 @@ SOURCES += \
     stone.cpp \
     step.cpp \
     singlegame.cpp \
-    netgame.cpp \
-    mainwidget.cpp
+    mainwidget.cpp \
+    choosedlg.cpp \
+    ctrlpanel.cpp
 
 HEADERS += \
         board.h \
     stone.h \
     step.h \
     singlegame.h \
-    netgame.h \
-    mainwidget.h
+    mainwidget.h \
+    choosedlg.h \
+    ctrlpanel.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

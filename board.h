@@ -49,6 +49,10 @@ public:
     bool canmove(int id,int row,int col);
     bool canmove(int i, int killid, int row, int col);
     bool canwin(int a,int b);
+    bool victory();
+    int Victory();
+    bool deuce();
+    bool repeat_step(step* Step1,step* Step2);
     int getstoneatLine(int row_f, int col_f, int row_d, int col_d);
     void moveStone(int moveid, int killid);
     void moveStone(int id, int row, int col);
@@ -57,6 +61,21 @@ public:
 
     void savestep(int moveid, int rowto,int colto, QVector<step *> &steps);
     void savestep(int moveid, int killid, QVector<step *> &steps);
+
+    virtual void back();
+    void back(step* Step);
+    void backone(step* Step);
+
+    void changestep();
+
+signals:
+    void mySlot();
+    void mySignal();
+    void MySignal();
+
+public slots:
+    void slotback();
+    void slotnewgame();
 
 };
 
