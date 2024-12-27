@@ -283,7 +283,7 @@ void singlegame::getAllpossiblemove(bool redfirst,QVector<step *> &steps)
     }  
     for(int k=0;k<32;k++)
     {
-        int c=qrand()%32;
+        int c = generator->bounded(0,32);
         if(!_s[c]._turnup)
         {
             savestep(c,_s[c]._row,_s[c]._col,steps);

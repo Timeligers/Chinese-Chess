@@ -1,11 +1,14 @@
 #include "board.h"
 #include <QDebug>
+#include <QtGlobal>
+#include <QRandomGenerator>
 #include <QMessageBox>
 
 board::board(QWidget *parent) : QFrame(parent)
 {
     this->setFixedSize(_r*20+1, _r*22+1);
     new_game();
+    generator = new QRandomGenerator();
 }
 
 board::~board()
@@ -34,10 +37,9 @@ void board::new_game()
 
 void board::srand()
 {
-    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
         for(int i=0;i<32;)
-        {   int f=0;
-            int m=qrand()%32;
+        {   int f = 0;
+            int m = generator->bounded(0,32);
             for(int j=0;j<i;j++)
                 if(c[j]==m)
                 {

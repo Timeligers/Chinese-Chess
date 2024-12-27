@@ -9,6 +9,7 @@
 #include <QTime>
 #include <QFrame>
 #include <QMouseEvent>
+#include <QRandomGenerator>
 
 class board : public QFrame
 {
@@ -26,6 +27,7 @@ public:
     bool _redstep;
     bool _redfirst;
     bool start;
+    QRandomGenerator *generator;
 
     QVector<step*> steps;
 
